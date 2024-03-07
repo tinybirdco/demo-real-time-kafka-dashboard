@@ -1,3 +1,4 @@
 .tinyb
 .e
 node_modules
+generate.sh
