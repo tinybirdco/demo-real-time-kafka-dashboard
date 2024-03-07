@@ -7,8 +7,8 @@ SCHEMA >
     `version` String `json:$.version`
 
 ENGINE "MergeTree"
-ENGINE_PARTITION_KEY "toYYYYMM(__timestamp)"
-ENGINE_SORTING_KEY "__timestamp"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp"
 
 KAFKA_CONNECTION_NAME 'confluent'
 KAFKA_TOPIC 'clickstream'
