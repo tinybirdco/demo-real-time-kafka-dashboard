@@ -1,0 +1,22 @@
+NODE counts
+SQL >
+
+    SELECT
+      countIf(action='page_hit') AS page_hits,
+      countIf(action='click') AS clicks,
+      countIf(action='form_submit') AS form_submissions
+    FROM events
+    WHERE JSONExtractString(payload, 'pathname') = '/'
+
+
+
+NODE funnel_1
+SQL >
+
+    SELECT
+      1 AS stage_1,
+      clicks/page_hits AS stage_2,
+      form_submissions/page_hits AS stage_3
+    FROM counts
+
+

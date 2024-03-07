@@ -10,10 +10,10 @@ DESCRIPTION >
 
 SQL >
 
-    WITH (now() - INTERVAL 30 minute) AS start
-    SELECT addMinutes(toStartOfMinute(start), number) AS t
+    WITH (now() - INTERVAL 60 second) AS start
+    SELECT addSeconds(start, number) AS t
     FROM (
-      SELECT arrayJoin(range(1, 31)) AS number
+      SELECT arrayJoin(range(1, 61)) AS number
     )
 
 
@@ -25,7 +25,7 @@ SQL >
       toStartOfMinute(timestamp) AS t,
       uniq(session_id) AS c
     FROM events
-    WHERE timestamp >= now() - INTERVAL 30 minute
+    WHERE timestamp >= now() - INTERVAL 60 second
     GROUP BY t
     ORDER BY t ASC
 
