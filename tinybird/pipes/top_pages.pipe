@@ -1,5 +1,7 @@
 TOKEN "top_pages_endpoint_read_3207" READ
 
+TOKEN "all_endpoints_read" READ
+
 NODE endpoint
 SQL >
 

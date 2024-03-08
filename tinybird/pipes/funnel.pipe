@@ -1,3 +1,7 @@
+TOKEN "funnel_endpoint_read_0902" READ
+
+TOKEN "all_endpoints_read" READ
+
 NODE counts
 SQL >
 
@@ -10,7 +14,7 @@ SQL >
 
 
 
-NODE funnel_1
+NODE endpoint
 SQL >
 
     SELECT
