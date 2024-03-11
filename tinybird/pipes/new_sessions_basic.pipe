@@ -1,0 +1,45 @@
+DESCRIPTION >
+	Gets the current count of live visitors based on sessions that have an event in the last 30 seconds
+
+
+TOKEN "all_endpoints_read" READ
+
+TOKEN "live_visitors_endpoint_read_8714" READ
+
+NODE time_series
+DESCRIPTION >
+    Generate a time series for the last 30 minutes
+
+SQL >
+
+    WITH (toStartOfInterval(now(), INTERVAL 5 second) - INTERVAL 5 minute) AS start
+    SELECT addSeconds(start, number) AS t
+    FROM (
+      SELECT arrayJoin(range(0, 300, 5)) AS number
+    )
+
+
+
+NODE active_sessions_per_minute
+SQL >
+
+    SELECT
+      toStartOfInterval(timestamp, INTERVAL 5 second) AS t,
+      uniq(session_id) AS c
+    FROM events
+    WHERE timestamp >= now() - INTERVAL 5 minute
+    GROUP BY t
+    ORDER BY t ASC
+
+
+
+NODE endpoint
+SQL >
+
+    SELECT 
+      formatDateTime(a.t,  '%Y-%m-%dT%H:%M:%SZ', 'UTC') AS ts,
+      b.c
+    FROM time_series a 
+    LEFT JOIN active_sessions_per_minute b USING t
+
+

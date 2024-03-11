@@ -1,0 +1,9 @@
+# Data Source created from Pipe 'rollup_1h'
+
+SCHEMA >
+    `t` DateTime,
+    `c` AggregateFunction(uniq, String)
+
+ENGINE "AggregatingMergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(t)"
+ENGINE_SORTING_KEY "t"

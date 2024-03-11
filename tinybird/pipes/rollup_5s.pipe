@@ -1,0 +1,11 @@
+NODE rollup_5s_0
+SQL >
+
+    SELECT
+        toStartOfInterval(timestamp, toIntervalSecond(5)) AS t,
+        uniqState(session_id) AS c
+    FROM events
+    GROUP BY t
+    ORDER BY t DESC
+
+

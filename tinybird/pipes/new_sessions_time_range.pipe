@@ -1,0 +1,46 @@
+DESCRIPTION >
+	Gets the current count of live visitors based on sessions that have an event in the last 30 seconds
+
+
+TOKEN "all_endpoints_read" READ
+
+NODE time_series
+DESCRIPTION >
+    Generate a time series for the last 30 minutes
+
+SQL >
+
+    %
+    WITH
+        toStartOfInterval(parseDateTimeBestEffort({{ String(start_time, '2024-03-08T19:35:00Z', required=True) }}), INTERVAL 5 second) AS start_,
+        toStartOfInterval(parseDateTimeBestEffort({{ String(end_time, '2024-03-08T19:40:00Z', required=True) }}), INTERVAL 5 second) AS end_,
+        arrayJoin(range(0, age('second', start_, end_), 5)) AS number
+    SELECT addSeconds(start_, number) AS t
+
+
+
+NODE active_sessions_per_minute
+SQL >
+
+    %
+    SELECT
+      toStartOfInterval(timestamp, INTERVAL 5 second) AS t,
+      uniq(session_id) AS c
+    FROM events
+    WHERE timestamp >= parseDateTimeBestEffort({{ String(start_time, '2024-03-08T19:35:00Z', required=True) }})
+    AND timestamp < parseDateTimeBestEffort({{ String(end_time, '2024-03-08T19:40:00Z', required=True) }})
+    GROUP BY t
+    ORDER BY t ASC
+
+
+
+NODE endpoint
+SQL >
+
+    SELECT 
+      formatDateTime(a.t,  '%Y-%m-%dT%H:%M:%SZ', 'UTC') AS ts,
+      b.c
+    FROM time_series a 
+    LEFT JOIN active_sessions_per_minute b USING t
+
+
