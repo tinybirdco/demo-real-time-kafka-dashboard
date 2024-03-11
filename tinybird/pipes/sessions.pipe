@@ -20,7 +20,7 @@ SQL >
 
 
 
-NODE active_sessions_per_minute
+NODE current_sessions
 SQL >
 
     SELECT
@@ -29,7 +29,7 @@ SQL >
     FROM events
     WHERE timestamp >= now() - INTERVAL 5 minute
     GROUP BY t
-    ORDER BY t ASC
+    ORDER BY t DESC
 
 
 
@@ -40,6 +40,7 @@ SQL >
       formatDateTime(a.t,  '%Y-%m-%dT%H:%M:%SZ', 'UTC') AS ts,
       b.c
     FROM time_series a 
-    LEFT JOIN active_sessions_per_minute b USING t
+    LEFT JOIN current_sessions b USING t
+    ORDER BY t DESC
 
 

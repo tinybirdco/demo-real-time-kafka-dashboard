@@ -8,4 +8,7 @@ SQL >
     GROUP BY t
     ORDER BY t DESC
 
+TYPE materialized
+DATASOURCE rollup_1m_mv
+
 

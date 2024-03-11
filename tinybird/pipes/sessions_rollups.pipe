@@ -1,0 +1,88 @@
+DESCRIPTION >
+	Gets the current count of live visitors based on sessions that have an event in the last 30 seconds
+
+
+TOKEN "all_endpoints_read" READ
+
+TOKEN "sessions_rollups_endpoint_read_5763" READ
+
+NODE time_series
+DESCRIPTION >
+    Generate a time series for the last 30 minutes
+
+SQL >
+
+    %
+    WITH
+        dateDiff(
+            minute,
+            parseDateTimeBestEffort({{ String(start_time) }}),
+            parseDateTimeBestEffort({{ String(end_time) }})
+        ) as filter,
+        toStartOfInterval(
+            parseDateTimeBestEffort({{ String(start_time) }}),
+            INTERVAL(filter <= 30 ? 5: (filter <= 1440 ? 60:3600)) second
+        ) AS start_,
+        toStartOfInterval(
+            parseDateTimeBestEffort({{ String(end_time) }}),
+            INTERVAL(filter <= 30 ? 5: (filter <= 1440 ? 60:3600)) second
+        ) AS end_,
+        arrayJoin(
+            range(0, age('second', start_, end_), (filter <= 30 ? 5: (filter <= 1440 ? 60:3600)))
+        ) AS number
+    SELECT addSeconds(start_, number) AS t
+
+
+
+NODE current_sessions
+SQL >
+
+    %
+    WITH 
+      dateDiff(minute, parseDateTimeBestEffort({{String(start_time)}}), parseDateTimeBestEffort({{String(end_time)}})) as filter
+    SELECT
+      t,
+      uniqMerge(c) AS c
+    FROM rollup_5s_mv
+    WHERE t >= parseDateTimeBestEffort({{ String(start_time, required=True) }})
+    AND t < parseDateTimeBestEffort({{ String(end_time, required=True) }})
+    AND filter <= 30
+    GROUP BY t
+    ORDER BY t ASC
+    UNION ALL
+    WITH 
+      dateDiff(minute, parseDateTimeBestEffort({{String(start_time)}}), parseDateTimeBestEffort({{String(end_time)}})) as filter
+    SELECT
+      t,
+      uniqMerge(c) AS c
+    FROM rollup_1m_mv
+    WHERE t >= parseDateTimeBestEffort({{ String(start_time, required=True) }})
+    AND t < parseDateTimeBestEffort({{ String(end_time, required=True) }})
+    AND filter BETWEEN 30 AND 1440
+    GROUP BY t
+    ORDER BY t ASC
+    UNION ALL
+    WITH 
+      dateDiff(minute, parseDateTimeBestEffort({{String(start_time)}}), parseDateTimeBestEffort({{String(end_time)}})) as filter
+    SELECT
+      t,
+      uniqMerge(c) AS c
+    FROM rollup_1h_mv
+    WHERE t >= parseDateTimeBestEffort({{ String(start_time, required=True) }})
+    AND t < parseDateTimeBestEffort({{ String(end_time, required=True) }})
+    AND filter > 1440 
+    GROUP BY t
+    ORDER BY t ASC
+
+
+
+NODE endpoint
+SQL >
+
+    SELECT 
+      formatDateTime(a.t,  '%Y-%m-%dT%H:%M:%SZ', 'UTC') AS ts,
+      b.c
+    FROM time_series a 
+    LEFT JOIN current_sessions b USING t
+
+

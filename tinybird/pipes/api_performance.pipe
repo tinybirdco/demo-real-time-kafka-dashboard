@@ -1,0 +1,16 @@
+TOKEN "all_endpoints_read" READ
+
+TOKEN "api_latency_endpoint_read_8407" READ
+
+NODE endpoint
+SQL >
+
+    SELECT
+      formatDateTime(toStartOfInterval(start_datetime, INTERVAL 5 second),  '%Y-%m-%dT%H:%M:%SZ', 'UTC') AS ts,
+      avg(read_bytes) AS processed_bytes
+    FROM tinybird.pipe_stats_rt
+    WHERE pipe_name = 'sessions_rollups'
+    GROUP BY ts
+    ORDER BY ts DESC
+
+
