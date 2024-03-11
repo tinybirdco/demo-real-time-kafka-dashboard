@@ -12,22 +12,25 @@ DESCRIPTION >
 
 SQL >
 
-    WITH (toStartOfInterval(now(), INTERVAL 5 second) - INTERVAL 5 minute) AS start
-    SELECT addSeconds(start, number) AS t
-    FROM (
-      SELECT arrayJoin(range(0, 300, 5)) AS number
-    )
+    %
+    WITH
+        toStartOfInterval(parseDateTimeBestEffort({{ String(start_time, '2024-03-08T19:35:00Z', required=True) }}), INTERVAL 5 second) AS start_,
+        toStartOfInterval(parseDateTimeBestEffort({{ String(end_time, '2024-03-08T19:40:00Z', required=True) }}), INTERVAL 5 second) AS end_,
+        arrayJoin(range(0, age('second', start_, end_), 5)) AS number
+    SELECT addSeconds(start_, number) AS t
 
 
 
 NODE active_sessions_per_minute
 SQL >
 
+    %
     SELECT
       toStartOfInterval(timestamp, INTERVAL 5 second) AS t,
       uniq(session_id) AS c
     FROM events
-    WHERE timestamp >= now() - INTERVAL 5 minute
+    WHERE timestamp >= parseDateTimeBestEffort({{ String(start_time, '2024-03-08T19:35:00Z', required=True) }})
+    AND timestamp < parseDateTimeBestEffort({{ String(end_time, '2024-03-08T19:40:00Z', required=True) }})
     GROUP BY t
     ORDER BY t ASC
 
