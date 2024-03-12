@@ -10,9 +10,12 @@ ENGINE "MergeTree"
 ENGINE_PARTITION_KEY "toYYYYMM(__timestamp)"
 ENGINE_SORTING_KEY "__timestamp"
 
-KAFKA_CONNECTION_NAME 'confluent'
-KAFKA_TOPIC 'clickstream'
-KAFKA_GROUP_ID 'clickstream_1710174709003'
+# KAFKA_CONNECTION_NAME my_connection_name
+# KAFKA_BOOTSTRAP_SERVERS my_server:9092
+# KAFKA_KEY my_username
+# KAFKA_SECRET my_password
+# KAFKA_TOPIC my_topic
+# KAFKA_GROUP_ID my_group_id
 KAFKA_AUTO_OFFSET_RESET 'latest'
 KAFKA_STORE_RAW_VALUE 'False'
 KAFKA_STORE_HEADERS 'False'
