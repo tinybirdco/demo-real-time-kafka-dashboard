@@ -107,7 +107,7 @@ You can use these three different pipes to see the differences in dashboard perf
 Alternatively, you can use a `curl` to check it:
 
 ```sh
-export TB_HOST = <your api host e.g. https://api.us-east.tinybird.co>
+export TB_HOST=<your api host e.g. https://api.us-east.tinybird.co>
 curl --compressed -H 'Authorization: Bearer $TB_TOKEN $TB_HOST/v0/pipes/sessions.json
 ```
 
