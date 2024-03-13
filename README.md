@@ -1,4 +1,4 @@
-# Build a real-time dashboardd over Kafka
+# Build a real-time dashboard over Kafka
 
 Follow the steps below to build and optimize a real-time analytics dashboard over Kafka data using Tinybird and Grafana.
 
