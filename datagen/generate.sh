@@ -1,0 +1,1 @@
+mockingbird-cli confluent-cloud-kafka --schema "schema.json" --eps $1 --restEndpoint <YOUR_REST_ENDPOINT> --clusterId <YOUR CLUSTER ID> --topic <YOUR_TOPIC> --apiKey <YOUR KEY> --apiSecret <YOUR_SECRET>
